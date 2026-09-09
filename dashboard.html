@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - مخزن عين شمس</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 30px 20px;
+            height: 100vh;
+            overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            right: 0;
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .sidebar-logo h2 {
+            color: #333;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .sidebar-logo .icon {
+            font-size: 40px;
+        }
+
+        .nav-menu {
+            list-style: none;
+        }
+
+        .nav-item {
+            margin-bottom: 15px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            color: #666;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateX(-5px);
+        }
+
+        .nav-link i {
+            margin-left: 12px;
+            width: 20px;
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            width: 100%;
+            padding: 12px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .main-content {
+            flex: 1;
+            margin-right: 280px;
+            padding: 40px;
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .card-title {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-value {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .card-btn {
+            width: 100%;
+            padding: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title i {
+            font-size: 28px;
+            color: #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            flex: 1;
+            padding: 12px;
+            background: #e0e0e0;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #f5f5f5;
+            padding: 15px;
+            text-align: right;
+            color: #333;
+            font-weight: 600;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            color: #666;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            margin: 0 4px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .edit-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .print-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: #999;
+            float: left;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            margin-top: 15px;
+        }
+
+        .success-message {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.4s ease-out;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-right: 0;
+                height: auto;
+                padding: 20px;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-logo">
+            <div class="icon">📦</div>
+            <h2>مخزن عين شمس</h2>
+        </div>
+
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <div class="nav-link active" onclick="showSection('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>لوحة التحكم</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showSection('customers')">
+                    <i class="fas fa-users"></i>
+                    <span>العملاء</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showSection('products')">
+                    <i class="fas fa-box"></i>
+                    <span>المنتجات</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showSection('sales-invoice')">
+                    <i class="fas fa-file-invoice"></i>
+                    <span>فواتير البيع</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showSection('purchase-invoice')">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>فواتير المشتريات</span>
+                </div>
+            </li>
+            <li class="nav-item">
+                <div class="nav-link" onclick="showSection('reports')">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>التقارير</span>
+                </div>
+            </li>
+        </ul>
+
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 id="pageTitle">لوحة التحكم</h1>
+            <div class="user-info">
+                <span id="userName">مرحباً</span>
+                <div class="user-avatar" id="userAvatar">Z</div>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">إجمالي المنتجات</div>
+                    <div class="card-value" id="totalProducts">0</div>
+                    <button class="card-btn" onclick="showSection('products')">عرض المنتجات</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">👥</div>
+                    <div class="card-title">العملاء</div>
+                    <div class="card-value" id="totalCustomers">0</div>
+                    <button class="card-btn" onclick="showSection('customers')">عرض العملاء</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🧾</div>
+                    <div class="card-title">فواتير البيع</div>
+                    <div class="card-value" id="totalSalesInvoices">0</div>
+                    <button class="card-btn" onclick="showSection('sales-invoice')">عرض الفواتير</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">🛍️</div>
+                    <div class="card-title">فواتير المشتريات</div>
+                    <div class="card-value" id="totalPurchaseInvoices">0</div>
+                    <button class="card-btn" onclick="showSection('purchase-invoice')">عرض الفواتير</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">💰</div>
+                    <div class="card-title">إجمالي البيع</div>
+                    <div class="card-value" id="totalSalesAmount">0</div>
+                    <button class="card-btn" onclick="showSection('reports')">التقارير</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">إجمالي المشتريات</div>
+                    <div class="card-value" id="totalPurchaseAmount">0</div>
+                    <button class="card-btn" onclick="showSection('reports')">التقارير</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Customers Section -->
+        <div id="customers" class="content-section">
+            <div class="section-title">
+                <i class="fas fa-users"></i>
+                <span>إدارة العملاء</span>
+            </div>
+
+            <button class="btn-primary" style="width: 200px; margin-bottom: 20px;" onclick="openCustomerModal()">
+                <i class="fas fa-plus"></i> إضافة عميل جديد
+            </button>
+
+            <div id="successMsg" class="success-message"></div>
+
+            <table id="customersTable">
+                <thead>
+                    <tr>
+                        <th>رقم العميل</th>
+                        <th>الاسم</th>
+                        <th>رقم الهاتف</th>
+                        <th>العنوان</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="customersBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products" class="content-section">
+            <div class="section-title">
+                <i class="fas fa-box"></i>
+                <span>إدارة المنتجات</span>
+            </div>
+
+            <button class="btn-primary" style="width: 200px; margin-bottom: 20px;" onclick="openProductModal()">
+                <i class="fas fa-plus"></i> إضافة منتج جديد
+            </button>
+
+            <table id="productsTable">
+                <thead>
+                    <tr>
+                        <th>رقم المنتج</th>
+                        <th>اسم المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الفئة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="productsBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Sales Invoice Section -->
+        <div id="sales-invoice" class="content-section">
+            <div class="section-title">
+                <i class="fas fa-file-invoice"></i>
+                <span>فواتير البيع</span>
+            </div>
+
+            <button class="btn-primary" style="width: 200px; margin-bottom: 20px;" onclick="openSalesInvoiceModal()">
+                <i class="fas fa-plus"></i> فاتورة بيع جديدة
+            </button>
+
+            <table id="salesInvoicesTable">
+                <thead>
+                    <tr>
+                        <th>رقم الفاتورة</th>
+                        <th>اسم العميل</th>
+                        <th>التاريخ</th>
+                        <th>الإجمالي</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="salesInvoicesBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Purchase Invoice Section -->
+        <div id="purchase-invoice" class="content-section">
+            <div class="section-title">
+                <i class="fas fa-shopping-cart"></i>
+                <span>فواتير المشتريات</span>
+            </div>
+
+            <button class="btn-primary" style="width: 200px; margin-bottom: 20px;" onclick="openPurchaseInvoiceModal()">
+                <i class="fas fa-plus"></i> فاتورة مشتريات جديدة
+            </button>
+
+            <table id="purchaseInvoicesTable">
+                <thead>
+                    <tr>
+                        <th>رقم الفاتورة</th>
+                        <th>الموردة</th>
+                        <th>التاريخ</th>
+                        <th>الإجمالي</th>
+                        <th>الحالة</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="purchaseInvoicesBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="content-section">
+            <div class="section-title">
+                <i class="fas fa-chart-bar"></i>
+                <span>التقارير والإحصائيات</span>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="card-icon">📈</div>
+                    <div class="card-title">إجمالي إيرادات البيع</div>
+                    <div class="card-value" id="reportTotalSales">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📉</div>
+                    <div class="card-title">إجمالي تكاليف المشتريات</div>
+                    <div class="card-value" id="reportTotalPurchases">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">💹</div>
+                    <div class="card-title">الربح الصافي</div>
+                    <div class="card-value" id="reportNetProfit">0</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <div class="card-title">قيمة المخزون</div>
+                    <div class="card-value" id="reportInventoryValue">0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Modal -->
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCustomerModal()">&times;</span>
+            <h2 class="modal-title">إضافة عميل جديد</h2>
+            <form id="customerForm">
+                <div class="form-group">
+                    <label for="customerName">اسم العميل</label>
+                    <input type="text" id="customerName" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="customerPhone">رقم الهاتف</label>
+                        <input type="tel" id="customerPhone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="customerEmail">البريد الإلكتروني</label>
+                        <input type="email" id="customerEmail">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress">العنوان</label>
+                    <textarea id="customerAddress" rows="3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">حفظ العميل</button>
+                    <button type="button" class="btn-secondary" onclick="closeCustomerModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h2 class="modal-title">إضافة منتج جديد</h2>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="productName">اسم المنتج</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productCategory">الفئة</label>
+                        <input type="text" id="productCategory" placeholder="مثل: ماكينات خياطة">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">السعر</label>
+                        <input type="number" id="productPrice" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="productQuantity">الكمية</label>
+                        <input type="number" id="productQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="productUnit">الوحدة</label>
+                        <input type="text" id="productUnit" placeholder="مثل: قطعة">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">الوصف</label>
+                    <textarea id="productDescription" rows="3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">حفظ المنتج</button>
+                    <button type="button" class="btn-secondary" onclick="closeProductModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sales Invoice Modal -->
+    <div id="salesInvoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSalesInvoiceModal()">&times;</span>
+            <h2 class="modal-title">فاتورة بيع جديدة</h2>
+            <form id="salesInvoiceForm">
+                <div class="form-group">
+                    <label for="salesCustomer">العميل</label>
+                    <select id="salesCustomer" required>
+                        <option value="">اختر عميل</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="salesProduct">المنتج</label>
+                    <select id="salesProduct" required>
+                        <option value="">اختر منتج</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salesQuantity">الكمية</label>
+                        <input type="number" id="salesQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="salesPrice">السعر</label>
+                        <input type="number" id="salesPrice" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="salesNotes">ملاحظات</label>
+                    <textarea id="salesNotes" rows="3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">حفظ الفاتورة</button>
+                    <button type="button" class="btn-secondary" onclick="closeSalesInvoiceModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Purchase Invoice Modal -->
+    <div id="purchaseInvoiceModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePurchaseInvoiceModal()">&times;</span>
+            <h2 class="modal-title">فاتورة مشتريات جديدة</h2>
+            <form id="purchaseInvoiceForm">
+                <div class="form-group">
+                    <label for="purchaseSupplier">اسم الموردة</label>
+                    <input type="text" id="purchaseSupplier" required>
+                </div>
+                <div class="form-group">
+                    <label for="purchaseProduct">المنتج</label>
+                    <select id="purchaseProduct" required>
+                        <option value="">اختر منتج</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="purchaseQuantity">الكمية</label>
+                        <input type="number" id="purchaseQuantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchasePrice">السعر</label>
+                        <input type="number" id="purchasePrice" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="purchaseNotes">ملاحظات</label>
+                    <textarea id="purchaseNotes" rows="3"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button type="submit" class="btn-primary">حفظ الفاتورة</button>
+                    <button type="button" class="btn-secondary" onclick="closePurchaseInvoiceModal()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage
+        let customers = JSON.parse(localStorage.getItem('customers')) || [];
+        let products = JSON.parse(localStorage.getItem('products')) || [];
+        let salesInvoices = JSON.parse(localStorage.getItem('salesInvoices')) || [];
+        let purchaseInvoices = JSON.parse(localStorage.getItem('purchaseInvoices')) || [];
+
+        // Check if user is logged in
+        window.addEventListener('load', function() {
+            if (!localStorage.getItem('isLoggedIn')) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            const username = localStorage.getItem('username');
+            document.getElementById('userName').textContent = 'مرحباً، ' + username;
+            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+            
+            updateDashboard();
+            loadCustomers();
+            loadProducts();
+            loadSalesInvoices();
+            loadPurchaseInvoices();
+            updateSelects();
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Remove active from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Add active to clicked nav link
+            event.target.closest('.nav-link').classList.add('active');
+
+            // Update page title
+            const titles = {
+                dashboard: 'لوحة التحكم',
+                customers: 'إدارة العملاء',
+                products: 'إدارة المنتجات',
+                'sales-invoice': 'فواتير البيع',
+                'purchase-invoice': 'فواتير المشتريات',
+                reports: 'التقارير والإحصائيات'
+            };
+            document.getElementById('pageTitle').textContent = titles[sectionId];
+        }
+
+        // Logout
+        function logout() {
+            if (confirm('هل أنت متأكد من رغبتك في تسجيل الخروج؟')) {
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('username');
+                window.location.href = 'index.html';
+            }
+        }
+
+        // Customer Functions
+        function openCustomerModal() {
+            document.getElementById('customerModal').style.display = 'block';
+            document.getElementById('customerForm').reset();
+        }
+
+        function closeCustomerModal() {
+            document.getElementById('customerModal').style.display = 'none';
+        }
+
+        document.getElementById('customerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const customer = {
+                id: 'C' + Date.now(),
+                name: document.getElementById('customerName').value,
+                phone: document.getElementById('customerPhone').value,
+                email: document.getElementById('customerEmail').value,
+                address: document.getElementById('customerAddress').value,
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+            customers.push(customer);
+            localStorage.setItem('customers', JSON.stringify(customers));
+            closeCustomerModal();
+            loadCustomers();
+            updateDashboard();
+            updateSelects();
+            showSuccessMessage('تم إضافة العميل بنجاح');
+        });
+
+        function loadCustomers() {
+            const tbody = document.getElementById('customersBody');
+            tbody.innerHTML = '';
+            customers.forEach((customer, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${customer.id}</td>
+                    <td>${customer.name}</td>
+                    <td>${customer.phone}</td>
+                    <td>${customer.address}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editCustomer(${index})">تعديل</button>
+                        <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        function deleteCustomer(index) {
+            if (confirm('هل أنت متأكد؟')) {
+                customers.splice(index, 1);
+                localStorage.setItem('customers', JSON.stringify(customers));
+                loadCustomers();
+                updateDashboard();
+                updateSelects();
+            }
+        }
+
+        // Product Functions
+        function openProductModal() {
+            document.getElementById('productModal').style.display = 'block';
+            document.getElementById('productForm').reset();
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').style.display = 'none';
+        }
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const product = {
+                id: 'P' + Date.now(),
+                name: document.getElementById('productName').value,
+                category: document.getElementById('productCategory').value,
+                price: parseFloat(document.getElementById('productPrice').value),
+                quantity: parseInt(document.getElementById('productQuantity').value),
+                unit: document.getElementById('productUnit').value,
+                description: document.getElementById('productDescription').value,
+                date: new Date().toLocaleDateString('ar-EG')
+            };
+            products.push(product);
+            localStorage.setItem('products', JSON.stringify(products));
+            closeProductModal();
+            loadProducts();
+            updateDashboard();
+            updateSelects();
+            showSuccessMessage('تم إضافة المنتج بنجاح');
+        });
+
+        function loadProducts() {
+            const tbody = document.getElementById('productsBody');
+            tbody.innerHTML = '';
+            products.forEach((product, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${product.id}</td>
+                    <td>${product.name}</td>
+                    <td>${product.quantity}</td>
+                    <td>${product.price.toFixed(2)}</td>
+                    <td>${product.category}</td>
+                    <td>
+                        <button class="action-btn edit-btn" onclick="editProduct(${index})">تعديل</button>
+                        <button class="action-btn delete-btn" onclick="deleteProduct(${index})">حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        function deleteProduct(index) {
+            if (confirm('هل أنت متأكد؟')) {
+                products.splice(index, 1);
+                localStorage.setItem('products', JSON.stringify(products));
+                loadProducts();
+                updateDashboard();
+                updateSelects();
+            }
+        }
+
+        // Sales Invoice Functions
+        function openSalesInvoiceModal() {
+            document.getElementById('salesInvoiceModal').style.display = 'block';
+            document.getElementById('salesInvoiceForm').reset();
+        }
+
+        function closeSalesInvoiceModal() {
+            document.getElementById('salesInvoiceModal').style.display = 'none';
+        }
+
+        document.getElementById('salesInvoiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const quantity = parseInt(document.getElementById('salesQuantity').value);
+            const price = parseFloat(document.getElementById('salesPrice').value);
+            
+            const invoice = {
+                id: 'S' + Date.now(),
+                customerId: document.getElementById('salesCustomer').value,
+                productId: document.getElementById('salesProduct').value,
+                quantity: quantity,
+                price: price,
+                total: quantity * price,
+                notes: document.getElementById('salesNotes').value,
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'مكتمل'
+            };
+            
+            salesInvoices.push(invoice);
+            localStorage.setItem('salesInvoices', JSON.stringify(salesInvoices));
+            closeSalesInvoiceModal();
+            loadSalesInvoices();
+            updateDashboard();
+            showSuccessMessage('تم حفظ فاتورة البيع بنجاح');
+        });
+
+        function loadSalesInvoices() {
+            const tbody = document.getElementById('salesInvoicesBody');
+            tbody.innerHTML = '';
+            salesInvoices.forEach((invoice, index) => {
+                const customer = customers.find(c => c.id === invoice.customerId);
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${customer ? customer.name : 'غير معروف'}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.total.toFixed(2)}</td>
+                    <td>${invoice.status}</td>
+                    <td>
+                        <button class="action-btn print-btn" onclick="printSalesInvoice(${index})">طباعة</button>
+                        <button class="action-btn delete-btn" onclick="deleteSalesInvoice(${index})">حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        function deleteSalesInvoice(index) {
+            if (confirm('هل أنت متأكد؟')) {
+                salesInvoices.splice(index, 1);
+                localStorage.setItem('salesInvoices', JSON.stringify(salesInvoices));
+                loadSalesInvoices();
+                updateDashboard();
+            }
+        }
+
+        // Purchase Invoice Functions
+        function openPurchaseInvoiceModal() {
+            document.getElementById('purchaseInvoiceModal').style.display = 'block';
+            document.getElementById('purchaseInvoiceForm').reset();
+        }
+
+        function closePurchaseInvoiceModal() {
+            document.getElementById('purchaseInvoiceModal').style.display = 'none';
+        }
+
+        document.getElementById('purchaseInvoiceForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const quantity = parseInt(document.getElementById('purchaseQuantity').value);
+            const price = parseFloat(document.getElementById('purchasePrice').value);
+            
+            const invoice = {
+                id: 'P' + Date.now(),
+                supplier: document.getElementById('purchaseSupplier').value,
+                productId: document.getElementById('purchaseProduct').value,
+                quantity: quantity,
+                price: price,
+                total: quantity * price,
+                notes: document.getElementById('purchaseNotes').value,
+                date: new Date().toLocaleDateString('ar-EG'),
+                status: 'مكتمل'
+            };
+            
+            purchaseInvoices.push(invoice);
+            localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+            closePurchaseInvoiceModal();
+            loadPurchaseInvoices();
+            updateDashboard();
+            showSuccessMessage('تم حفظ فاتورة المشتريات بنجاح');
+        });
+
+        function loadPurchaseInvoices() {
+            const tbody = document.getElementById('purchaseInvoicesBody');
+            tbody.innerHTML = '';
+            purchaseInvoices.forEach((invoice, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${invoice.id}</td>
+                    <td>${invoice.supplier}</td>
+                    <td>${invoice.date}</td>
+                    <td>${invoice.total.toFixed(2)}</td>
+                    <td>${invoice.status}</td>
+                    <td>
+                        <button class="action-btn print-btn" onclick="printPurchaseInvoice(${index})">طباعة</button>
+                        <button class="action-btn delete-btn" onclick="deletePurchaseInvoice(${index})">حذف</button>
+                    </td>
+                `;
+            });
+        }
+
+        function deletePurchaseInvoice(index) {
+            if (confirm('هل أنت متأكد؟')) {
+                purchaseInvoices.splice(index, 1);
+                localStorage.setItem('purchaseInvoices', JSON.stringify(purchaseInvoices));
+                loadPurchaseInvoices();
+                updateDashboard();
+            }
+        }
+
+        // Update Selects
+        function updateSelects() {
+            // Update customers select
+            const customerSelect = document.getElementById('salesCustomer');
+            customerSelect.innerHTML = '<option value="">اختر عميل</option>';
+            customers.forEach(customer => {
+                const option = document.createElement('option');
+                option.value = customer.id;
+                option.textContent = customer.name;
+                customerSelect.appendChild(option);
+            });
+
+            // Update products select
+            const productSelects = [
+                document.getElementById('salesProduct'),
+                document.getElementById('purchaseProduct')
+            ];
+            productSelects.forEach(select => {
+                select.innerHTML = '<option value="">اختر منتج</option>';
+                products.forEach(product => {
+                    const option = document.createElement('option');
+                    option.value = product.id;
+                    option.textContent = product.name;
+                    option.dataset.price = product.price;
+                    select.appendChild(option);
+                });
+            });
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            document.getElementById('totalProducts').textContent = products.length;
+            document.getElementById('totalCustomers').textContent = customers.length;
+            document.getElementById('totalSalesInvoices').textContent = salesInvoices.length;
+            document.getElementById('totalPurchaseInvoices').textContent = purchaseInvoices.length;
+            
+            const totalSales = salesInvoices.reduce((sum, inv) => sum + inv.total, 0);
+            const totalPurchases = purchaseInvoices.reduce((sum, inv) => sum + inv.total, 0);
+            const inventoryValue = products.reduce((sum, prod) => sum + (prod.price * prod.quantity), 0);
+            
+            document.getElementById('totalSalesAmount').textContent = totalSales.toFixed(2) + ' ج.م';
+            document.getElementById('totalPurchaseAmount').textContent = totalPurchases.toFixed(2) + ' ج.م';
+            
+            // Reports
+            document.getElementById('reportTotalSales').textContent = totalSales.toFixed(2) + ' ج.م';
+            document.getElementById('reportTotalPurchases').textContent = totalPurchases.toFixed(2) + ' ج.م';
+            document.getElementById('reportNetProfit').textContent = (totalSales - totalPurchases).toFixed(2) + ' ج.م';
+            document.getElementById('reportInventoryValue').textContent = inventoryValue.toFixed(2) + ' ج.م';
+        }
+
+        // Print Functions
+        function printSalesInvoice(index) {
+            const invoice = salesInvoices[index];
+            const customer = customers.find(c => c.id === invoice.customerId);
+            const product = products.find(p => p.id === invoice.productId);
+            
+            const printContent = `
+                <h2>فاتورة بيع</h2>
+                <p><strong>رقم الفاتورة:</strong> ${invoice.id}</p>
+                <p><strong>التاريخ:</strong> ${invoice.date}</p>
+                <p><strong>العميل:</strong> ${customer ? customer.name : 'غير معروف'}</p>
+                <p><strong>المنتج:</strong> ${product ? product.name : 'غير معروف'}</p>
+                <p><strong>الكمية:</strong> ${invoice.quantity}</p>
+                <p><strong>السعر الواحد:</strong> ${invoice.price.toFixed(2)}</p>
+                <p><strong>الإجمالي:</strong> ${invoice.total.toFixed(2)}</p>
+                <p><strong>ملاحظات:</strong> ${invoice.notes}</p>
+            `;
+            
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function printPurchaseInvoice(index) {
+            const invoice = purchaseInvoices[index];
+            const product = products.find(p => p.id === invoice.productId);
+            
+            const printContent = `
+                <h2>فاتورة مشتريات</h2>
+                <p><strong>رقم الفاتورة:</strong> ${invoice.id}</p>
+                <p><strong>التاريخ:</strong> ${invoice.date}</p>
+                <p><strong>الموردة:</strong> ${invoice.supplier}</p>
+                <p><strong>المنتج:</strong> ${product ? product.name : 'غير معروف'}</p>
+                <p><strong>الكمية:</strong> ${invoice.quantity}</p>
+                <p><strong>السعر الواحد:</strong> ${invoice.price.toFixed(2)}</p>
+                <p><strong>الإجمالي:</strong> ${invoice.total.toFixed(2)}</p>
+                <p><strong>ملاحظات:</strong> ${invoice.notes}</p>
+            `;
+            
+            const printWindow = window.open('', '', 'width=800,height=600');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        // Show Success Message
+        function showSuccessMessage(message) {
+            const msg = document.getElementById('successMsg');
+            msg.textContent = message;
+            msg.classList.add('show');
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
