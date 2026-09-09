@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مخزن عين شمس - نظام إدارة المخزن</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,8 +13,8 @@
         }
 
         body {
-            font-family: 'Cairo', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,225 +23,354 @@
             overflow: hidden;
         }
 
-        /* Animated Background Network */
-        .network-bg {
+        /* Animated Grid Background */
+        .grid-background {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 0;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, rgba(255, 107, 53, .05) 25%, rgba(255, 107, 53, .05) 26%, transparent 27%, transparent 74%, rgba(255, 107, 53, .05) 75%, rgba(255, 107, 53, .05) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, rgba(255, 107, 53, .05) 25%, rgba(255, 107, 53, .05) 26%, transparent 27%, transparent 74%, rgba(255, 107, 53, .05) 75%, rgba(255, 107, 53, .05) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 1;
         }
 
-        .dot {
+        @keyframes gridMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50px); }
+        }
+
+        /* Floating Nodes */
+        .node {
             position: absolute;
-            width: 2px;
-            height: 2px;
-            background: rgba(255, 255, 255, 0.5);
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ff6b35 0%, #ff6b35 60%, transparent 100%);
             border-radius: 50%;
-            animation: float 6s infinite;
-        }
-
-        .line {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            animation: pulse 3s infinite;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.6);
+            animation: float 8s infinite;
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px) translateX(0px); opacity: 0.5; }
-            50% { transform: translateY(-20px) translateX(10px); opacity: 0.8; }
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+            50% { transform: translateY(-30px) translateX(15px); opacity: 0.8; }
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.3; }
+        /* Connecting Lines */
+        svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
         }
 
+        line {
+            stroke: rgba(255, 107, 53, 0.2);
+            stroke-width: 1;
+        }
+
+        .line-animated {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: lineDraw 3s ease-in-out infinite;
+        }
+
+        @keyframes lineDraw {
+            0% { stroke-dashoffset: 1000; }
+            50% { stroke-dashoffset: 0; }
+            100% { stroke-dashoffset: -1000; }
+        }
+
+        /* Login Container */
         .login-container {
             position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            z-index: 10;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             padding: 50px;
             width: 100%;
             max-width: 450px;
-            animation: slideUp 0.8s ease-out;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+            box-shadow: 
+                0 0 60px rgba(255, 107, 53, 0.3),
+                inset 0 0 30px rgba(255, 107, 53, 0.1),
+                0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: containerFloat 4s ease-in-out infinite;
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes containerFloat {
+            0%, 100% { transform: translateY(0) translateZ(0); }
+            50% { transform: translateY(-20px) translateZ(50px); }
         }
 
         .logo-section {
             text-align: center;
             margin-bottom: 40px;
+            perspective: 1000px;
         }
 
         .logo {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 20px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        .logo-inner {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 40px;
-            animation: bounce 2s infinite;
+            font-size: 50px;
+            box-shadow: 
+                0 10px 40px rgba(255, 107, 53, 0.4),
+                0 0 20px rgba(255, 107, 53, 0.2),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            animation: rotateLogo 6s linear infinite;
+            border: 2px solid rgba(255, 107, 53, 0.3);
         }
 
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        @keyframes rotateLogo {
+            0% { transform: rotateX(0) rotateY(0); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
         }
 
         .logo-section h1 {
-            color: #333;
+            color: #fff;
             font-size: 28px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.4);
         }
 
         .logo-section p {
-            color: #999;
-            font-size: 14px;
+            color: rgba(255, 107, 53, 0.8);
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         .form-group {
             margin-bottom: 25px;
-            animation: fadeIn 0.8s ease-out;
+            animation: slideIn 0.6s ease-out backwards;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         label {
             display: block;
-            color: #333;
+            color: rgba(255, 255, 255, 0.9);
             font-weight: 600;
             margin-bottom: 10px;
             font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         input {
             width: 100%;
             padding: 14px 16px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(255, 107, 53, 0.3);
             border-radius: 10px;
             font-size: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
             transition: all 0.3s ease;
             font-family: inherit;
+            backdrop-filter: blur(10px);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
         }
 
         input:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #ff6b35;
+            background: rgba(255, 107, 53, 0.1);
+            box-shadow: 
+                0 0 20px rgba(255, 107, 53, 0.3),
+                inset 0 0 10px rgba(255, 107, 53, 0.1);
+            transform: translateZ(50px);
         }
 
         .login-btn {
             width: 100%;
             padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
             color: white;
             border: none;
             border-radius: 10px;
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+
+        .login-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
 
         .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            transform: translateY(-3px);
+            box-shadow: 
+                0 15px 40px rgba(255, 107, 53, 0.5),
+                0 0 30px rgba(255, 107, 53, 0.3);
         }
 
         .login-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px);
         }
 
         .error-message {
-            color: #e74c3c;
+            color: #ff4757;
             font-size: 14px;
             margin-top: 10px;
             text-align: center;
             display: none;
             animation: shake 0.5s;
+            background: rgba(255, 71, 87, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            border-left: 3px solid #ff4757;
         }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
         }
 
         .show-error {
             display: block !important;
         }
+
+        @media (max-width: 600px) {
+            .login-container {
+                padding: 30px;
+                max-width: 90%;
+            }
+
+            .logo-section h1 {
+                font-size: 24px;
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Network Background -->
-    <div class="network-bg" id="networkBg"></div>
+    <!-- Grid Background -->
+    <div class="grid-background"></div>
+
+    <!-- SVG for connecting lines -->
+    <svg id="connectionSvg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></svg>
+
+    <!-- Floating Nodes -->
+    <div class="node" style="top: 10%; left: 10%; animation-delay: 0s;"></div>
+    <div class="node" style="top: 20%; right: 15%; animation-delay: 1s;"></div>
+    <div class="node" style="bottom: 20%; left: 15%; animation-delay: 2s;"></div>
+    <div class="node" style="bottom: 15%; right: 10%; animation-delay: 3s;"></div>
+    <div class="node" style="top: 50%; left: 5%; animation-delay: 1.5s;"></div>
+    <div class="node" style="top: 30%; right: 5%; animation-delay: 2.5s;"></div>
 
     <!-- Login Container -->
     <div class="login-container">
         <div class="logo-section">
-            <div class="logo">📦</div>
+            <div class="logo">
+                <div class="logo-inner">📦</div>
+            </div>
             <h1>مخزن عين شمس</h1>
-            <p>نظام إدارة المخزن الاحترافي</p>
+            <p>نظام إدارة المخزن المتقدم</p>
         </div>
 
         <form id="loginForm">
-            <div class="form-group">
+            <div class="form-group" style="animation-delay: 0.1s;">
                 <label for="username">اسم المستخدم</label>
                 <input type="text" id="username" placeholder="أدخل اسم المستخدم" required>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="animation-delay: 0.2s;">
                 <label for="password">كلمة المرور</label>
                 <input type="password" id="password" placeholder="أدخل كلمة المرور" required>
             </div>
 
-            <button type="submit" class="login-btn">دخول</button>
-            <div class="error-message" id="errorMsg">بيانات غير صحيحة!</div>
+            <button type="submit" class="login-btn">دخول النظام</button>
+            <div class="error-message" id="errorMsg">❌ بيانات غير صحيحة!</div>
         </form>
     </div>
 
     <script>
-        // Generate animated network background
-        function generateNetworkBg() {
-            const bg = document.getElementById('networkBg');
-            const dots = [];
+        // Generate animated connecting lines
+        function drawConnections() {
+            const svg = document.getElementById('connectionSvg');
+            const nodes = document.querySelectorAll('.node');
             
-            for (let i = 0; i < 20; i++) {
-                const dot = document.createElement('div');
-                dot.className = 'dot';
-                dot.style.left = Math.random() * 100 + '%';
-                dot.style.top = Math.random() * 100 + '%';
-                dot.style.animationDelay = Math.random() * 6 + 's';
-                bg.appendChild(dot);
-                dots.push({
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight
-                });
+            // Clear previous lines
+            svg.innerHTML = '';
+            
+            // Draw lines between random nodes
+            if (nodes.length >= 2) {
+                for (let i = 0; i < nodes.length - 1; i++) {
+                    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    const node1 = nodes[i];
+                    const node2 = nodes[i + 1];
+                    
+                    const x1 = parseFloat(node1.style.left) * window.innerWidth / 100;
+                    const y1 = parseFloat(node1.style.top) * window.innerHeight / 100;
+                    const x2 = parseFloat(node2.style.left) * window.innerWidth / 100;
+                    const y2 = parseFloat(node2.style.top) * window.innerHeight / 100;
+                    
+                    line.setAttribute('x1', x1);
+                    line.setAttribute('y1', y1);
+                    line.setAttribute('x2', x2);
+                    line.setAttribute('y2', y2);
+                    line.setAttribute('class', 'line-animated');
+                    
+                    svg.appendChild(line);
+                }
             }
         }
 
-        generateNetworkBg();
+        drawConnections();
+        window.addEventListener('resize', drawConnections);
 
         // Login Handler
         document.getElementById('loginForm').addEventListener('submit', function(e) {
